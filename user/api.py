@@ -28,7 +28,7 @@ def get_vcode(request:HttpRequest):
     phonenum = request.GET.get("phonenum")
     # 发送验证码,并检查是否发送成功:
     if logics.send_vcode(phonenum):
-        # 发送成功返回OK状态码
+        # 发送成功返回OK状态码:考虑如何与用户返回数据,采用Json返回;
         return JsonResponse({
             'code':stat.OK,
             'data':None
@@ -50,9 +50,9 @@ def check_vcode(request:HttpRequest):
     # 存在用户未提交vcode状态解决方案:vcode\cache_vcode为空并且相等;
     if vcode and cached_vcode and vcode == cached_vcode:
         # 进行登录或者注册操作,需要判断是否注册过,或者判断用户是否已在登录状态
-        # 查询用户,如果用户没有注册,需要进行判断
         # 根据查询用户判断登录或者注册操作
         try:
+            # 查询用户,如果用户没有注册,需要进行判断
             user = User.objects.get(phonenum=phonenum)
         except User.DoesNotExist:
             # 如果不存在,则需要进行注册
@@ -63,6 +63,9 @@ def check_vcode(request:HttpRequest):
         # 登录操作,将浏览器端的信息记录下来,通过session进行保存;
         # 记录用户ID,并将用户信息传给服务端
         request.session['uid'] = user.id
+        # 返回时以JSON格式返回,考虑返回信息包括哪些内容,如何封装后使用
+        # An HTTP response class that consumes data to be serialized to JSON
+        # 默认情况下，JsonResponse的传入参数是个字典类型
         return JsonResponse({
             'code':stat.OK,
             'data':user.to_dict()

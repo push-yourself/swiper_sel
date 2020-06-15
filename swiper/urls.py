@@ -20,6 +20,6 @@ from user import api as user_api
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path(r'^api/user/get_vcode',user_api.get_vcode),
-    path(r'^api/user/check_vcode',user_api.check_vcode)
+    path('api/user/get_vcode',user_api.get_vcode),
+    path('api/user/check_vcode',user_api.check_vcode)
 ]
