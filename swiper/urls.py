@@ -21,5 +21,8 @@ from user import api as user_api
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/user/get_vcode',user_api.get_vcode),
-    path('api/user/check_vcode',user_api.check_vcode)
+    path('api/user/check_vcode',user_api.check_vcode),
+    path('api/weibo/wb_auth',user_api.wb_auth),
+    path('api/user/get_profile',user_api.get_profile),
+    path('api/user/set_profile',user_api.set_profile),
 ]

@@ -20,10 +20,6 @@ def gen_randcode(length: int) -> str:
     return "".join(list_char)
 
 
-# 测试
-# print(gen_randcode(5))
-
-
 def send_vcode(phone):
     # 随机生成验证码
     vcode = gen_randcode(6)
@@ -64,3 +60,55 @@ def send_vcode(phone):
         if result['code'] == '000000':
             return True
     return False
+
+
+def get_access_token(code):
+    '''获取微博的授权令牌'''
+    # 从全局变量处复制一套参数配置出来
+    args = cfg.WB_ACCESS_TOKEN_ARGS.copy()
+    args['code'] = code
+    # 向微博的授权服务器上提交接口地址与参数信息
+    # 微博服务端需要接收配置信息以及回调接口
+    response = requests.post(cfg.WB_ACCESS_TOKEN_API,data=args)
+    # 检查最终的返回值,若存在,查看提交状态
+    if response.status_code == 200:
+        result = response.json()
+        # 回调函数的返回值
+        # {
+        # "access_token": "ACCESS_TOKEN",
+        # "expires_in": 1234,
+        # "remind_in": "798114",
+        # "uid": "12341234"
+        # }
+        access_token = result['access_token']
+        wb_uid = result['uid']
+        return access_token,wb_uid
+    return None,None
+
+
+def get_user_info(access_token,wb_uid):
+    # 将用户展示参数信息复制一份用作处理
+    args = cfg.WB_USER_SHOW_ARGS.copy()
+    args['access_token'] = access_token
+    args['uid'] = wb_uid
+    # 从微博服务器上获取用户信息
+    response = requests.get(cfg.WB_USER_SHOW,params=args)
+    # 检查最终的返回值
+    if response.status_code == 200:
+        result = response.json()
+        # 将返回信息匹配orm中用户模型[需要判断哪些是我们需要的信息]
+        user_info = {
+            'phonenum':'WB_%s'%wb_uid,
+            'nickname':result['screen_name'],
+            'sex':'female' if result['gender']=='f' else 'male',
+            'avatar':result['avatar_hd'],
+            'location':result['location'].split(' ')[0],
+        }
+        return user_info
+    return None
+
+
+
+
+
+
