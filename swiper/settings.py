@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 自定义模型
-    'user'
+    'user',
+    'social'
 ]
 
 MIDDLEWARE = [
