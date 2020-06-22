@@ -19,3 +19,7 @@ USER_DATA_ERR = 1005
 
 # 用户交友资料错
 PROFILE_DATA_ERR = 1006
+
+
+SwipeTypeErr =  1007    # 滑动类型错误
+SwipeRepeatErr = 1008 # 重复滑动错误
