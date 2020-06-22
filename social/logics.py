@@ -33,18 +33,13 @@ def rcmd(user):
         birthday__lte = latest_birthday
     ).exclude(id__in = sid_list)[:20]
 
-    # TODO:排除划过的用户
-
-
-
-
     return users
 
 
 
 def like_someone(user,sid):
     '''喜欢某人'''
-    # 添加滑动记录
+    # 添加滑动记录,由于滑动方式多样,对滑动进行封装
     Swiper.swiper(user.id,sid,'like')
     # 检查对方是否喜欢自己(对方喜欢自己,需要注意先后)
     if Swiper.is_liked(sid,user.id):

@@ -46,14 +46,10 @@ class Swiper(models.Model):
             2.对于判断滑动的用户是否为已经划过的用户,如果是,抛出滑动重复错误
         '''
         if stype not in ['like', 'superlike', 'display']:
-            # 返回错误类型
             raise stat.SwipeTypeErr
-        # 检查是否为已经滑动的当前用户
-        # 这个可以判断好友关系表中是否存在当前用户
+        # 判断好友关系表中是否存在当前用户
         if cls.objects.filter(uid=uid, sid=sid).exists():
-            # 存在返回滑动重复错误
             raise stat.SwipeRepeatErr
-        # 对于滑动操作进行信息创建添加至滑动记录表
         return cls.objects.create(uid=uid, sid=sid, stype=stype)
 
 
@@ -71,5 +67,7 @@ class Friend(models.Model):
     def make_friends(cls,uid,sid):
         '''创建好友关系'''
         uid1,uid2 = (sid,uid) if uid > sid else (uid,sid)
+        # 判断是否为好友关系,没有则创建;用意在于防止用户频繁的刷新操作;
+        # 防止数据库中出现相同记录；
         cls.objects.get_or_create(uid1=uid1,uid2=uid2)
 
