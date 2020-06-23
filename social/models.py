@@ -1,6 +1,8 @@
 from django.db import models
 
 # Create your models here.
+from django.db.models import Q
+
 from common import stat
 
 
@@ -52,6 +54,14 @@ class Swiper(models.Model):
             raise stat.SwipeRepeatErr
         return cls.objects.create(uid=uid, sid=sid, stype=stype)
 
+    @classmethod
+    def who_liked_me(cls,uid):
+        return cls.objects.filter(sid=uid,stype__in=['like', 'superlike'])\
+            .values_list('uid',flat=True)
+
+
+
+
 
 class Friend(models.Model):
     '''
@@ -60,6 +70,7 @@ class Friend(models.Model):
                 1.自己的user_id
                 2.好友的user_id
     '''
+    objects = models.Manager()
     uid1 = models.IntegerField()
     uid2 = models.IntegerField()
 
@@ -71,3 +82,13 @@ class Friend(models.Model):
         # 防止数据库中出现相同记录；
         cls.objects.get_or_create(uid1=uid1,uid2=uid2)
 
+    @classmethod
+    def friend_ids(cls,uid):
+        '''查询自己所有好友ID '''
+        condition = Q(uid1=uid) | Q(uid2=uid)
+        friend_relations = cls.objects.filter(uid1=condition)
+        uid_list = []
+        for relation in friend_relations:
+            friend_id = relation.uid2 if relation.uid1 == uid else relation.uid1
+            uid_list.append(friend_id)
+        return uid_list

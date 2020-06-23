@@ -4,6 +4,7 @@ from libs.http import render_json
 
 # Create your views here.
 from social import logics
+from social.models import Swiper, Friend
 from user.models import User
 
 
@@ -44,10 +45,19 @@ def rewind(request):
     '''后悔'''
     pass
 
+
+
+
+
 def who_liked_me(request):
-    '''谁喜欢我'''
-    pass
+    '''查看谁喜欢我'''
+    user_id_list = Swiper.who_liked_me(request.user.id)
+    user = User.objects.filter(id__in=user_id_list)
+    return render_json(user)
 
 def friend_list(request):
     '''好友列表'''
-    pass
+    friend_id_list = Friend.friend_ids(request.user.id)
+    users = User.objects.filter(id__in=friend_id_list)
+    result = [user.to_dict() for user in users]
+    return render_json(result)
