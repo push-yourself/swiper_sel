@@ -14,6 +14,7 @@ class User(models.Model):
         ('广州','广州'),
         ('深圳','深圳')
     )
+
     phonenum = models.CharField(verbose_name='手机号',max_length=15,unique=True)
     nickname = models.CharField(verbose_name='昵称',max_length=20)
     sex = models.CharField(verbose_name='性别',max_length=8,choices=SEX)
@@ -21,23 +22,9 @@ class User(models.Model):
     # 对于图片存储一般都会存储一个网址;
     avatar = models.CharField(verbose_name='个人形象',max_length=256)
     location = models.CharField(verbose_name='常居地',max_length=20,choices=LOCATION)
-    #
-    class Meta:
-        db_table = 'user'
 
-    @property
-    def profile(self):
-        # 处理方式:
-        # 如果user对象没有这个_profile属性,先执行并创建:get_or_create方法的使用;
-        if not hasattr(self,'_profile'):
-            # 类名.方法()   这种操作需要自行传递对象地址
-            self._profile,_ = Profile.objects.get_or_create(id=self.id)
-            # 等同于:
-            # try:
-            #     profile = Profile.objects.get(id=self.id)
-            # except Profile.DoesNotExists:
-            #     profile = Profile.objects.create(id=self.id)
-        return self._profile
+    class Meta:
+        db_table = 'user'# 可改变当前模型类对应的表名
 
     def to_dict(self):
         '''将JSON对象转换为字典格式'''
@@ -52,13 +39,27 @@ class User(models.Model):
             'location':self.location
         }
 
+    @property
+    def profile(self):
+        # 处理方式:
+        # 如果user对象没有这个_profile属性,先执行并创建:get_or_create方法的使用;
+        if not hasattr(self,'_profile'):
+            self._profile,_ = Profile.objects.get_or_create(id=self.id)
+            # 等同于:
+            # try:
+            #     profile = Profile.objects.get(id=self.id)
+            # except Profile.DoesNotExists:
+            #     profile = Profile.objects.create(id=self.id)
+
+        return self._profile
+
+'''
 # 注意:在这里执行时第一次执行get_or_create方法即可;
 # 关键点在于:方法的属性化
-# user = User.objects.get(id = '123')
-# user.profile.dating_sex
-# user.profile.dating_location
-# user.profile.max_distance
-
+user.profile.dating_sex
+user.profile.dating_location
+user.profile.max_distance
+'''
 
 class Profile(models.Model):
     '''个人的交友资料'''
@@ -90,7 +91,8 @@ class Profile(models.Model):
         }
 
 
-user = User.objects.get_or_create(id=123)
+
+
 
 
 

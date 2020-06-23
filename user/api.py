@@ -1,65 +1,101 @@
 from django.core.cache import cache
 from django.http import HttpRequest,JsonResponse
 from django.shortcuts import render, redirect
-from common.stat import *
+import requests
+
+from common.stat import OK, VCODE_ERR, AVILD_VCODE, ACCESS_TOKEN_ERR, USER_INFO_ERR, USER_DATA_ERR, PROFILE_DATA_ERR
 from libs.http import render_json
-from common import keys
+from user.models import User
+from common import keys, stat
 from swiper import cfg
+from swiper.cfg import WB_AUTH_URL
 from user import logics
+# Create your views here.
 from user.forms import UserForm, ProfileForm
 from user.models import User
 
-
-# Create your views here.
 def get_vcode(request:HttpRequest):
-    '''获取短信验证码'''
-    # 获取客户端请求GET请求提交的数据
-    phonenum = request.GET.get("phonenum", )
+    '''
+    获取短信验证码
+    '''
+    #1.获取用户参数:请求
+    #2.GET与POST的使用场景
+    # 获取用户手机号
+    phonenum = request.GET.get("phonenum")
     # 发送验证码,并检查是否发送成功:
     if logics.send_vcode(phonenum):
+        # 发送成功返回OK状态码:考虑如何与用户返回数据,采用Json返回;
+        # return JsonResponse({
+        #     'code':stat.OK,
+        #     'data':None
+        # })
         return render_json(data=None,code=OK)
     else:
+        # 失败返回VCODE_ERR状态码
+        # return JsonResponse({
+        #     'code':stat.VCODE_ERR,
+        #     'data':None
+        # })
         return render_json(data=None, code=VCODE_ERR)
 
 def check_vcode(request:HttpRequest):
     '''进行验证并且进行登录注册'''
-    phonenum = request.POST.get('phonenum', )
-    vcode = request.POST.get('vcode', )  # 存在用户未提交vcode状态;
-    # # 从缓存取出验证码cache.get('Key')
-    cached_vcode = cache.get(keys.VCODE_KEY % phonenum, )
+    phonenum = request.POST.get('phonenum')
+    vcode = request.POST.get('vcode')# 存在用户未提交vcode状态;
+    # 先获取缓存,查看
+    cached_vcode = cache.get(keys.VCODE_KEY % phonenum)
     # 存在用户未提交vcode状态解决方案:vcode\cache_vcode为空并且相等;
     if vcode and cached_vcode and vcode == cached_vcode:
         # 进行登录或者注册操作,需要判断是否注册过,或者判断用户是否已在登录状态
+        # 根据查询用户判断登录或者注册操作
         try:
             # 查询用户,如果用户没有注册,需要进行判断
-            user = User.objects.get(,
+            user = User.objects.get(phonenum=phonenum)
         except User.DoesNotExist:
             # 如果不存在,则需要进行注册
             user = User.objects.create(
                 phonenum = phonenum,
-                nickname = phonenum # 可随机生成,现在昵称作为手机号
+                nickname = phonenum,# 可随机生成,现在昵称作为手机号
             )
-
+        # 登录操作,将浏览器端的信息记录下来,通过session进行保存;
         # 记录用户ID,并将用户信息传给服务端
         request.session['uid'] = user.id
+        # 返回时以JSON格式返回,考虑返回信息包括哪些内容,如何封装后使用
+        # An HTTP response class that consumes data to be serialized to JSON
+        # 默认情况下，JsonResponse的传入参数是个字典类型
+        # return JsonResponse({
+        #     'code':stat.OK,
+        #     'data':user.to_dict()
+        # })
         return render_json(data=user.to_dict(), code=OK)
     else:
+        # 如果存在null,则返回code代码1001
+        # return JsonResponse({
+        #     # 验证码无效,返回AVILD_VCODE状态码
+        #     'code':stat.AVILD_VCODE,
+        #     'data':None
+        # })
         return render_json(data=None, code=AVILD_VCODE)
 
 def wb_auth(request):
-    '''1.用户授权页跳转'''
+    '''用户授权页'''
+
     return redirect(cfg.WB_AUTH_URL)
 
 
 def wb_callback(request):
-    '''2.微博回调接口'''
+    '''
+        微博回调接口:
+            考虑需要哪些东西:
+                (1)code:用于第二步调用oauth2/access_token接口，获取授权后的access token。
+    '''
     # 获取code值
-    code = request.GET.get('code', )
+    code = request.GET.get('code')
     access_token,wb_uid = logics.get_access_token(code)
     # 判断回调值信息,如果没值,返回标志数;有值将调取用户信息
     if not access_token:
         return render_json(data=None, code=ACCESS_TOKEN_ERR)
-    # 回调值存在,需要获取用户信息
+    # 获取用户信息
     user_info = logics.get_user_info(access_token,wb_uid)
     if not user_info:
         # 没值返回标志码
@@ -67,19 +103,21 @@ def wb_callback(request):
     # 执行登录或者注册操作
     try:
         # 基于唯一表示phonenum来查询用户信息
-        user = User.objects.get(,
+        user = User.objects.get(phonenum=user_info['phonenum'])
     except User.DoesNotExist:
         # 没有该用户,进行注册,"命名关键字形参"
         user = User.objects.create(**user_info)
     # 将session信息通过uid进行保存至服务器,保存的原因在于保留会话
     request.session['uid'] = user.id
+    # 默认情况下，JsonResponse的传入参数是个字典类型
     return render_json(data=user.to_dict(), code=OK)
 
 
 def get_profile(request:HttpRequest):
     '''获取用户资料'''
+    user = request.user
     # request对象,新增user属性
-    profile_data = request.user.profile.to_dict()
+    profile_data = user.profile.to_dict()
     return render_json(data=profile_data, code=OK)
 
 def set_profile(request):

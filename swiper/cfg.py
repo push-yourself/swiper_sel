@@ -44,17 +44,3 @@ WB_USER_SHOW_ARGS = {
     'access_token':None,
     'uid':None
 }
-
-
-#REDIS 相关配置( 封装操作)
-REDIS = {
-    'host':'127.0.0.1',
-    'port':'6379',
-    'db':'3',
-    'password':'123456'
-}
-
-
-# 反悔相关配置
-DAILY_REWIND = 3    # 每日反悔次数
-REWIND_TIMEOUT = 5 * 60  # 可反悔的滑动记录秒数
