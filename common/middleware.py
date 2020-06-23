@@ -33,4 +33,6 @@ class AuthorizeMiddleware(MiddlewareMixin):
 class LoginErrMiddleware(MiddlewareMixin):
     '''逻辑异常处理中间件'''
     def process_exception(self,request,exception):
-        return render_json(data=exception.data,code=exception.code)
+        # 检查是否为父类的实例,
+        if isinstance(exception,stat.LoginErr):
+            return render_json(data=exception.data,code=exception.code)

@@ -44,3 +44,12 @@ WB_USER_SHOW_ARGS = {
     'access_token':None,
     'uid':None
 }
+
+
+#REDIS 相关配置( 封装操作)
+REDIS = {
+    'host':'127.0.0.1',
+    'port':'6379',
+    'db':'3',
+    'password':'123456'
+}

@@ -27,11 +27,17 @@ def like(request):
 
 def superlike(request):
     '''上划超级喜欢'''
-    pass
+    sid = int(request.POST.get('sid'))
+    is_matched = logics.superlike_someone(request.user, sid)
+    return render_json({
+        'matched': is_matched
+    })
 
 def dislike(request):
     '''左滑不喜欢'''
-    pass
+    sid = int(request.POST.get('sid'))
+    logics.dislike_someone(request.user, sid)
+    return render_json()
 
 
 def rewind(request):
