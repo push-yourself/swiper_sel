@@ -8,3 +8,13 @@
 VCODE_KEY = 'Vcode-%s'
 
 #用于验证微波的Key
+
+
+
+
+# 某人被超级喜欢过
+SUPERLIKED_KEY = 'SUPERLIKED-%s'
+
+
+# 返回
+REWWIND_KEY = 'REWIND-%s'
