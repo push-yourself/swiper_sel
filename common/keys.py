@@ -14,3 +14,7 @@ VCODE_KEY = 'Vcode-%s'
 
 # 某人被超级喜欢过
 SUPERLIKED_KEY = 'SUPERLIKED-%s'
+
+
+# 返回
+REWWIND_KEY = 'REWIND-%s'

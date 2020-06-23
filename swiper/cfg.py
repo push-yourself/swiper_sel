@@ -53,3 +53,8 @@ REDIS = {
     'db':'3',
     'password':'123456'
 }
+
+
+# 反悔相关配置
+DAILY_REWIND = 3    # 每日反悔次数
+REWIND_TIMEOUT = 5 * 60  # 可反悔的滑动记录秒数

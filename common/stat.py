@@ -34,3 +34,8 @@ SwipeTypeErr =  gen_login_err('SwipeTypeErr',1007 )
 # 重复滑动错误
 SwipeRepeatErr = gen_login_err('SwipeRepeatErr',1008)
 
+#
+RewindLimit = gen_login_err('RewindLimit',1009)
+# 反悔超时
+RewindTimeout = gen_login_err('RewindTimeout',1010)
+

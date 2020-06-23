@@ -24,11 +24,11 @@ class AuthorizeMiddleware(MiddlewareMixin):
             return    #直接放行
         # 对于登录状态下的进行检查校验
         # 查看请求中的session值
-        uid = request.session.get('uid')
+        uid = request.session.get('uid', )
         if not uid:
             return render_json(code=stat.LOGIN_REQUIRED)
         # 获取当前用户
-        request.user = User.objects.get(id=uid)
+        request.user = User.objects.get(,
 
 class LoginErrMiddleware(MiddlewareMixin):
     '''逻辑异常处理中间件'''

@@ -20,7 +20,7 @@ def like(request):
             1.对于出现的对象要先获取ID,目的在于判断;
             2.判断方式需要考虑是否在对方有喜欢自己,如果存在,则用户右滑,则可以建立好友关系;
     '''
-    sid = int(request.POST.get('sid'))
+    sid = int(request.POST.get('sid', ))
     is_matched = logics.like_someone(request.user,sid)
     return render_json({
         'matched':is_matched
@@ -28,7 +28,7 @@ def like(request):
 
 def superlike(request):
     '''上划超级喜欢'''
-    sid = int(request.POST.get('sid'))
+    sid = int(request.POST.get('sid', ))
     is_matched = logics.superlike_someone(request.user, sid)
     return render_json({
         'matched': is_matched
@@ -36,14 +36,22 @@ def superlike(request):
 
 def dislike(request):
     '''左滑不喜欢'''
-    sid = int(request.POST.get('sid'))
+    sid = int(request.POST.get('sid', ))
     logics.dislike_someone(request.user, sid)
     return render_json()
 
 
 def rewind(request):
-    '''后悔'''
-    pass
+    '''
+        后悔:
+            接口设计时的一些原则
+            1. 客户端传来的任何东西不可信，所有内容都需要验证
+            2. 接口的参数和返回值应保持吝啬原则，不要把与接口无关的东西传过去
+            3. 服务器能够直接获取的数据，不要由客户端传递
+    '''
+
+    logics.rewind_swiped(request.user)
+    return render_json()
 
 
 

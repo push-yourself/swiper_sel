@@ -14,7 +14,7 @@ from user.models import User
 def get_vcode(request:HttpRequest):
     '''获取短信验证码'''
     # 获取客户端请求GET请求提交的数据
-    phonenum = request.GET.get("phonenum")
+    phonenum = request.GET.get("phonenum", )
     # 发送验证码,并检查是否发送成功:
     if logics.send_vcode(phonenum):
         return render_json(data=None,code=OK)
@@ -23,16 +23,16 @@ def get_vcode(request:HttpRequest):
 
 def check_vcode(request:HttpRequest):
     '''进行验证并且进行登录注册'''
-    phonenum = request.POST.get('phonenum')
-    vcode = request.POST.get('vcode')# 存在用户未提交vcode状态;
+    phonenum = request.POST.get('phonenum', )
+    vcode = request.POST.get('vcode', )  # 存在用户未提交vcode状态;
     # # 从缓存取出验证码cache.get('Key')
-    cached_vcode = cache.get(keys.VCODE_KEY % phonenum)
+    cached_vcode = cache.get(keys.VCODE_KEY % phonenum, )
     # 存在用户未提交vcode状态解决方案:vcode\cache_vcode为空并且相等;
     if vcode and cached_vcode and vcode == cached_vcode:
         # 进行登录或者注册操作,需要判断是否注册过,或者判断用户是否已在登录状态
         try:
             # 查询用户,如果用户没有注册,需要进行判断
-            user = User.objects.get(phonenum=phonenum)
+            user = User.objects.get(,
         except User.DoesNotExist:
             # 如果不存在,则需要进行注册
             user = User.objects.create(
@@ -54,7 +54,7 @@ def wb_auth(request):
 def wb_callback(request):
     '''2.微博回调接口'''
     # 获取code值
-    code = request.GET.get('code')
+    code = request.GET.get('code', )
     access_token,wb_uid = logics.get_access_token(code)
     # 判断回调值信息,如果没值,返回标志数;有值将调取用户信息
     if not access_token:
@@ -67,7 +67,7 @@ def wb_callback(request):
     # 执行登录或者注册操作
     try:
         # 基于唯一表示phonenum来查询用户信息
-        user = User.objects.get(phonenum=user_info['phonenum'])
+        user = User.objects.get(,
     except User.DoesNotExist:
         # 没有该用户,进行注册,"命名关键字形参"
         user = User.objects.create(**user_info)
