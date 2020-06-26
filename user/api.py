@@ -32,7 +32,7 @@ def check_vcode(request:HttpRequest):
         # 进行登录或者注册操作,需要判断是否注册过,或者判断用户是否已在登录状态
         try:
             # 查询用户,如果用户没有注册,需要进行判断
-            user = User.objects.get(,
+            user = User.objects.get(phonenum=phonenum)
         except User.DoesNotExist:
             # 如果不存在,则需要进行注册
             user = User.objects.create(
@@ -67,7 +67,7 @@ def wb_callback(request):
     # 执行登录或者注册操作
     try:
         # 基于唯一表示phonenum来查询用户信息
-        user = User.objects.get(,
+        user = User.objects.get(phonenum=user_info['phonenum'])
     except User.DoesNotExist:
         # 没有该用户,进行注册,"命名关键字形参"
         user = User.objects.create(**user_info)

@@ -1,6 +1,11 @@
 from django.db import models
 
 # Create your models here.
+from django.db.models import IntegerField
+
+from vip.models import Vip
+
+
 class User(models.Model):
     objects = models.Manager()
     SEX = (
@@ -21,7 +26,10 @@ class User(models.Model):
     # 对于图片存储一般都会存储一个网址;
     avatar = models.CharField(verbose_name='个人形象',max_length=256)
     location = models.CharField(verbose_name='常居地',max_length=20,choices=LOCATION)
-    #
+    # 对于VIP新增字段
+    vip_id = models.IntegerField(default=1, verbose_name='用户对应的VIP')
+    vip_expired = models.DateTimeField(default='2000-1-1', verbose_name='会员过期时间')
+
     class Meta:
         db_table = 'user'
 
@@ -38,6 +46,13 @@ class User(models.Model):
             # except Profile.DoesNotExists:
             #     profile = Profile.objects.create(id=self.id)
         return self._profile
+
+
+    @property
+    def vip(self):
+        if not hasattr(self,'_vip'):
+            self._vip = Vip.objects.get_or_create(id=self.vip_id)
+        return self._vip
 
     def to_dict(self):
         '''将JSON对象转换为字典格式'''
@@ -90,7 +105,7 @@ class Profile(models.Model):
         }
 
 
-user = User.objects.get_or_create(id=123)
+
 
 
 

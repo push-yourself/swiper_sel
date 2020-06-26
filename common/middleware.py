@@ -28,7 +28,7 @@ class AuthorizeMiddleware(MiddlewareMixin):
         if not uid:
             return render_json(code=stat.LOGIN_REQUIRED)
         # 获取当前用户
-        request.user = User.objects.get(,
+        request.user = User.objects.get(id=uid)
 
 class LoginErrMiddleware(MiddlewareMixin):
     '''逻辑异常处理中间件'''

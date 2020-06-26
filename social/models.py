@@ -60,9 +60,6 @@ class Swiper(models.Model):
             .values_list('uid',flat=True)
 
 
-
-
-
 class Friend(models.Model):
     '''
         好友关系表:

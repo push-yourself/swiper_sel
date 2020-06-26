@@ -33,9 +33,11 @@ PROFILE_DATA_ERR = gen_login_err('PROFILE_DATA_ERR',1006)
 SwipeTypeErr =  gen_login_err('SwipeTypeErr',1007 )
 # 重复滑动错误
 SwipeRepeatErr = gen_login_err('SwipeRepeatErr',1008)
-
-#
+#反悔限制
 RewindLimit = gen_login_err('RewindLimit',1009)
 # 反悔超时
 RewindTimeout = gen_login_err('RewindTimeout',1010)
+# 用户权限限制
+PermissonLimit = gen_login_err('PermissonLimit',1011)
+
 

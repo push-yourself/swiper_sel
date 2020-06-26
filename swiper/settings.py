@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 自定义模型
     'user',
-    'social'
+    'social',
+    'vip'
 ]
 
 MIDDLEWARE = [
@@ -84,7 +85,7 @@ WSGI_APPLICATION = 'swiper.wsgi.application'
 DATABASES = {
         'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'nanjing_swiper',
+        'NAME': 'swiper_project',
         'USER':'root',
         'HOST':'127.0.0.1',
         'PORT':'3306',
