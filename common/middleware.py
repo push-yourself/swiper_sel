@@ -1,9 +1,11 @@
 from django.utils.deprecation import MiddlewareMixin
 from django.http import JsonResponse
-
+import logging
 from common import stat
 from libs.http import render_json
 from user.models import User
+
+err_log = logging.getLogger('err')
 
 
 class AuthorizeMiddleware(MiddlewareMixin):
@@ -21,7 +23,7 @@ class AuthorizeMiddleware(MiddlewareMixin):
         # request.path   获取当前请求地址;
         if request.path in self.WHITE_LIST:
             # 如果在白名单中,不需要进行处理;
-            return    #直接放行
+            return  # 直接放行
         # 对于登录状态下的进行检查校验
         # 查看请求中的session值
         uid = request.session.get('uid', )
@@ -30,9 +32,12 @@ class AuthorizeMiddleware(MiddlewareMixin):
         # 获取当前用户
         request.user = User.objects.get(id=uid)
 
+
 class LoginErrMiddleware(MiddlewareMixin):
     '''逻辑异常处理中间件'''
-    def process_exception(self,request,exception):
+
+    def process_exception(self, request, exception):
         # 检查是否为父类的实例,
-        if isinstance(exception,stat.LoginErr):
-            return render_json(data=exception.data,code=exception.code)
+        if isinstance(exception, stat.LoginErr):
+            err_log.error('遇到逻辑异常:[%s] %s' % (exception, stat.LoginErr))
+            return render_json(data=exception.data, code=exception.code)

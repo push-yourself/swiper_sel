@@ -16,5 +16,12 @@ VCODE_KEY = 'Vcode-%s'
 SUPERLIKED_KEY = 'SUPERLIKED-%s'
 
 
-# 返回
+# 反悔
 REWWIND_KEY = 'REWIND-%s'
+
+
+PROFILE_KEY ='Profile-%s'
+
+MODEL_KEY = 'Model-%s-%s'
+# 积分排行
+HOT_RANK_KEY = 'HotRank'

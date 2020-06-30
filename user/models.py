@@ -47,25 +47,25 @@ class User(models.Model):
             #     profile = Profile.objects.create(id=self.id)
         return self._profile
 
-
+    # 在1对多中通过id来实现外键关系
     @property
     def vip(self):
         if not hasattr(self,'_vip'):
             self._vip = Vip.objects.get_or_create(id=self.vip_id)
         return self._vip
 
-    def to_dict(self):
-        '''将JSON对象转换为字典格式'''
-        return {
-            'id':self.id,
-            'phonenum':self.phonenum,
-            'nickname':self.nickname,
-            'sex':self.sex,
-            # 注意日期字段是不能够被JSON序列化;因此需要对日期进行字符串转换;
-            'birthday':str(self.birt_day),
-            'avatar':self.avatar,
-            'location':self.location
-        }
+    # def to_dict(self):
+    #     '''将JSON对象转换为字典格式'''
+    #     return {
+    #         'id':self.id,
+    #         'phonenum':self.phonenum,
+    #         'nickname':self.nickname,
+    #         'sex':self.sex,
+    #         # 注意日期字段是不能够被JSON序列化;因此需要对日期进行字符串转换;
+    #         'birthday':str(self.birt_day),
+    #         'avatar':self.avatar,
+    #         'location':self.location
+    #     }
 
 # 注意:在这里执行时第一次执行get_or_create方法即可;
 # 关键点在于:方法的属性化
@@ -89,20 +89,20 @@ class Profile(models.Model):
     only_matched = models.BooleanField(default=True, verbose_name='只让匹配的人看我的相册')
     auto_play = models.BooleanField(default=True, verbose_name='自动播放视频')
 
-    def to_dict(self):
-        '''转换为字典格式'''
-        return {
-            'id': self.id,
-            'dating_sex': self.dating_sex,
-            'dating_location': self.dating_location,
-            'min_dating_age': self.min_dating_age,
-            'max_dating_age': self.max_dating_age,
-            'min_distance': self.min_distance,
-            'max_distance': self.max_distance,
-            'vibration': self.vibration,
-            'only_matched': self.only_matched,
-            'auto_play': self.auto_play,
-        }
+    # def to_dict(self):
+    #     '''转换为字典格式'''
+    #     return {
+    #         'id': self.id,
+    #         'dating_sex': self.dating_sex,
+    #         'dating_location': self.dating_location,
+    #         'min_dating_age': self.min_dating_age,
+    #         'max_dating_age': self.max_dating_age,
+    #         'min_distance': self.min_distance,
+    #         'max_distance': self.max_distance,
+    #         'vibration': self.vibration,
+    #         'only_matched': self.only_matched,
+    #         'auto_play': self.auto_play,
+    #     }
 
 
 

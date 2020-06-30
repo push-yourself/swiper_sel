@@ -5,6 +5,7 @@ import sys
 
 
 def main():
+    # 当前终端设置的环境变量添加Django环境变量，并加载相关配置
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'swiper.settings')
     try:
         from django.core.management import execute_from_command_line
@@ -16,6 +17,6 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
-
+# 如果为主函数
 if __name__ == '__main__':
     main()

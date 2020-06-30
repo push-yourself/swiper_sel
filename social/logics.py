@@ -1,5 +1,8 @@
 import datetime
 import time
+
+from django.http import response
+
 from common import keys, stat
 from libs.cache import rds
 from social.models import Swiper, Friend
@@ -123,6 +126,10 @@ def rewind_swiped(user):
         # 如果上一次超级喜欢,将自身uid从对方的优先推荐队列中删除
         if latest_swiped.stype == 'superlike':
             rds.zrem(keys.SUPERLIKED_KEY % latest_swiped.sid,user.id)
+
+    # 如果反悔的话,需要还原用户的滑动积分
+    score = -cfg.SWIPE_SCORE[latest_swiped.stype]# 查找反悔的滑动积分
+    rds.zincrby(keys.HOT_RANK_KEY,score,latest_swiped.sid)
     # 删除滑动记录
     latest_swiped.delete()
     # 更新当天的滑动次数
@@ -131,3 +138,47 @@ def rewind_swiped(user):
     next_zero = datetime.datetime(now.year,now.month,now.day) + datetime.timedelta()
     remain_seconds = next_zero - now
     rds.set(keys.REWWIND_KEY % user.id,rewind_times + 1,remain_seconds)
+
+
+def set_score(uid,stype):
+    # def demo(request,*args,**kwargs):
+    #     '''调整用户积分'''
+    #     # 先执行原函数
+    #     # 调用原函数
+    #     response = view_func(request, *args, **kwargs)
+    #     # 获取函数名
+    # stype = view_func.__name__
+    #获取积分
+    score = cfg.SWIPE_SCORE[stype]
+    # 获取被滑动用户id
+    # sid = int(request.POST.get('sid'))
+    rds.zincrby(keys.HOT_RANK_KEY,score,uid)
+    return response
+    # return demo
+
+def top_n(num):
+    '''取出排行榜前N的用户信息'''
+    # 从Redis中取出排行数据
+    rank_data = rds.zrevrange(keys.HOT_RANK_KEY,0,num-1,withscores=True)
+    # 对数据进行清洗，转为int
+    cleaned = [[int(uid),int(score)] for uid,score in rank_data]
+    # uid_list = [item[0] for item in cleaned]
+    # 根据用户批量提取用户,[推荐下面的推倒方式使用](取法1)
+    uid_list = [uid for uid,_ in cleaned]
+    users = User.objects.filter(id__in=uid_list)# in方法排行会导致原有顺序发生错乱，
+    # 因此可以使用sorted方法根据uid_list的索引进行排序
+    users = sorted(users,key=lambda user:uid_list.index(user.id))
+
+    ignore_fields = ['phonenum','sex','birthday','location','vip_id','vip_expired']
+    # 组装成之前设定的返回值
+    result = {}
+    for idx,user in enumerate(users):
+        score = cleaned[idx][1]
+        u_dict = user.to_dict(*ignore_fields)
+        u_dict['score'] = score
+        # users的排序是根据排名而来，
+        result[idx+1] = u_dict
+    return result
+    #(取法2：)
+    # User.objects.in_bulk(uid_list)
+

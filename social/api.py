@@ -1,9 +1,11 @@
 from django.shortcuts import render
 
+from libs.cache import rds
 from libs.http import render_json
 
 # Create your views here.
 from social import logics
+from social.logics import set_score
 from social.models import Swiper, Friend
 from user.models import User
 from vip.logics import need_permission
@@ -15,6 +17,7 @@ def get_rcmd_users(request):
     result = [user.to_dict() for user in users]
     return render_json(result)
 
+# @set_score
 def like(request):
     '''
         右滑喜欢:
@@ -23,12 +26,26 @@ def like(request):
     '''
     sid = int(request.POST.get('sid' ))
     is_matched = logics.like_someone(request.user,sid)
+    logics.set_score(sid,'like')
+    # rds.zincrby('xxx',5,sid)# 对于新功能,还是做好使用装饰器来操作
+    logics.set_score(sid, 'superlike')
     return render_json({
         'matched':is_matched
     })
 
 
+# @set_score
+def dislike(request):
+    '''左滑不喜欢'''
+    sid = int(request.POST.get('sid'))
+    logics.dislike_someone(request.user, sid)
+    logics.set_score(sid, 'dislike')
+    return render_json()
+
+
+# 注意:多层装饰器按照自上而下顺序
 @need_permission
+# @set_score
 def superlike(request):
     '''上划超级喜欢'''
     sid = int(request.POST.get('sid'))
@@ -36,12 +53,6 @@ def superlike(request):
     return render_json({
         'matched': is_matched
     })
-
-def dislike(request):
-    '''左滑不喜欢'''
-    sid = int(request.POST.get('sid'))
-    logics.dislike_someone(request.user, sid)
-    return render_json()
 
 
 
@@ -71,3 +82,12 @@ def friend_list(request):
     users = User.objects.filter(id__in=friend_id_list)
     result = [user.to_dict() for user in users]
     return render_json(result)
+
+# 展示[前50:注意：考虑可扩展性]的积分排行
+#1.考虑数据结构{1:{头像  姓名   得分},2:{}}
+def hot_rank(request):
+    '''用户积分排行榜'''
+    rank_data = {}
+    rank_data = logics.top_n(50)
+    return render_json(rank_data)
+

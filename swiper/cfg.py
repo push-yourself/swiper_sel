@@ -16,6 +16,12 @@ YZX_ARGS = {
  "uid":"2d92c6132139467b989d087c84a365d8"
 }
 
+# 七牛云配置(回头自己配置)
+QN_ACCESS_KEY = 'kEM0sRR-meB92XU43_a6xZqhiyyTuu5yreGCbFtw'
+QN_SECRET_KEY = 'QxTKqgnOb_UVldphU261qu9IdzmjkgGHh6GQVPPy'
+QN_BASE_URL = 'http://py4hx1gc8.bkt.clouddn.com'
+QN_BUCKET = 'sh1903'
+
 # 微博第三方登录接口
 WB_APP_KEY = '3531485379'
 WB_APP_SECRET = '4ed4cda6b8250e96e1a33f25e59cda7b'
@@ -58,3 +64,11 @@ REDIS = {
 # 反悔相关配置
 DAILY_REWIND = 3    # 每日反悔次数
 REWIND_TIMEOUT = 5 * 60  # 可反悔的滑动记录秒数
+
+
+# 滑动积分配置
+SWIPE_SCORE = {
+    'like':5,
+    'superlike':7,
+    'dislike':-5
+}
