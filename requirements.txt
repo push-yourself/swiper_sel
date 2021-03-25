@@ -132,7 +132,7 @@ python-debian==0.1.32
 python-speech-features==0.6
 pytz==2018.3
 pyxdg==0.25
-PyYAML==3.12
+PyYAML==5.4
 pyzmq==18.1.0
 qtconsole==4.5.5
 queuelib==1.5.0
