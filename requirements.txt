@@ -90,7 +90,7 @@ numpy==1.17.3
 oauth==1.0.1
 olefile==0.45.1
 opencv-contrib-python==3.4.2.16
-opencv-python==3.4.2.16
+opencv-python==4.2.0.32
 paddlepaddle==1.5.2
 pandas==0.25.3
 pandocfilters==1.4.2
