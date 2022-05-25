@@ -116,7 +116,7 @@ PyExecJS==1.5.1
 Pygments==2.2.0
 pygobject==3.26.1
 PyHamcrest==1.9.0
-PyJWT==1.7.1
+PyJWT==2.4.0
 pymacaroons==0.13.0
 pymongo==3.9.0
 PyMySQL==0.9.3
